@@ -170,7 +170,9 @@ const logoutUser = asyncHandler(async (req, res) => {
     await User.findByIdAndUpdate(
         req.user._id,
         {
-            $set: { refreshToken: undefined }
+            $unset : {
+                refreshToken: 1 // unset removes the field from the document
+            }
         },
         { new: true }
     )
@@ -271,11 +273,12 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 })
 
 const updateUserDetails = asyncHandler(async (req, res) => {
+    console.log(req.body);
     const { fullName, email } = req.body
     if (!fullName || !email) {
         throw new ApiError(400, "Full name and email are required!")
     }
-    const user = User.findByIdAndUpdate(
+    const user = await User.findByIdAndUpdate(
         req.user._id,
         {
             $set: {
@@ -328,7 +331,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 })
 
 const updateUserCoverImage = asyncHandler(async (req, res) => {
-    const coverImageLocalPath = req.file.path
+    const coverImageLocalPath = req.file?.path
     if (!coverImageLocalPath) {
         throw new ApiError(400, "Cover image is required!")
     }
