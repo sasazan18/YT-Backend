@@ -20,8 +20,10 @@ app.use(cookieParser())
 
 // Routes import 
 import userRoute from "./routes/user.route.js"
+import commentRoute from "./routes/comment.route.js"
 
 // Routes Declaration
 app.use("/api/v1/users", userRoute)
+app.use("/api/v1/comments", commentRoute)
 
 export { app }
