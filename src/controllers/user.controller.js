@@ -430,45 +430,6 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
         )
 })
 
-const uploadVideo = asyncHandler(async (req, res) => {
-    const videoLocalPath = req.files.videoFile?.[0]?.path
-    if (!videoLocalPath) {
-        throw new ApiError(400, "Video file is required!")
-    }
-    const video = await uploadOnCloudinary(videoLocalPath)
-    if (!video.url) {
-        throw new ApiError(500, "Error while uploading video. Please try again later.")
-    }
-
-    const thumbnailLocalPath = req.files.thumbnail?.[0]?.path
-    if (!thumbnailLocalPath) {
-        throw new ApiError(400, "Thumbnail image is required!")
-    }
-    const thumbnail = await uploadOnCloudinary(thumbnailLocalPath)
-    if (!thumbnail.url) {
-        throw new ApiError(500, "Error while uploading thumbnail. Please try again later.")
-    }
-
-    // upload video to the videos collection
-    const video_uploaded = await Video.create({
-        videoFile: video.url,
-        thumbnail: thumbnail.url,
-        owner: req.user?._id,
-        title: req.body.title,
-        description: req.body.description,
-        duration: req.body.duration
-    })
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(
-                200,
-                { video_uploaded },
-                "Video uploaded successfully!"
-            )
-        )
-})
-
 const getWatchHistory = asyncHandler(async (req, res) => {
     const user = await User.aggregate([
         {
@@ -530,6 +491,5 @@ export {
     updateUserAvatar,
     updateUserCoverImage,
     getUserChannelProfile,
-    uploadVideo,
     getWatchHistory
 }
